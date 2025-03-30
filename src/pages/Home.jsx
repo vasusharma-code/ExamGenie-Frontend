@@ -11,25 +11,31 @@ const Home = () => {
     e.preventDefault();
     if (message.trim() === "") return;
     setMessages([...messages, message]);
-    setMessage(""); // Clear input after sending
+    setMessage("");
   };
 
   return (
     <div className="flex h-screen bg-gray-50 text-gray-800">
       {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+      <Sidebar
+        isOpen={isSidebarOpen}
+        toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+      />
 
-      <div className="flex flex-col flex-1 mt-16">
+      {/* Main Content Wrapper with conditional margin */}
+      <div className={`${isSidebarOpen ? "ml-64" : "ml-0"} flex flex-col flex-1`}>
         {/* Navbar */}
         <Navbar isOpen={isSidebarOpen} />
 
         {/* Chat Section */}
-        <main className="flex flex-col flex-1 items-center justify-between p-4">
+        <main className="flex flex-col flex-1 items-center justify-between p-4 pt-20">
           <div className="flex-1 w-full max-w-3xl overflow-auto p-4 space-y-3">
             {messages.length === 0 ? (
               <p className="text-gray-600 text-center text-lg">
                 Welcome to <span className="font-semibold">ExamGenie</span>! <br />
-                <span className="text-gray-400">Hi, how can I assist you today?</span>
+                <span className="text-gray-400">
+                  Hi, how can I assist you today?
+                </span>
               </p>
             ) : (
               messages.map((msg, index) => (
