@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub, FaEye, FaEyeSlash } from "react-icons/fa";
+import config from "../config"; // Import backend base URL
 
 const Signup = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -11,6 +12,7 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const navigate = useNavigate();
 
   // Toggle Password Visibility
   const togglePassword = () => {
@@ -48,6 +50,20 @@ const Signup = () => {
     }
   };
 
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    const response = await fetch(`${config.backendBaseUrl}/api/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    if (response.ok) {
+      navigate("/");
+    } else {
+      alert("Signup failed");
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
@@ -72,68 +88,70 @@ const Signup = () => {
         </div>
 
         {/* Signup Form */}
-        <input
-          type="text"
-          placeholder="Full Name"
-          className="w-full p-3 border border-gray-300 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-        />
-
-        {/* Email Input */}
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={validateEmail}
-          className={`w-full p-3 border rounded mb-2 focus:outline-none focus:ring-2 transition ${
-            emailError ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-400"
-          }`}
-        />
-        {emailError && <p className="text-red-500 text-sm mb-4">{emailError}</p>}
-
-        {/* Password Input with Toggle */}
-        <div className="relative">
+        <form onSubmit={handleSignup}>
           <input
-            type={passwordVisible ? "text" : "password"}
-            placeholder="Create a password"
-            value={password}
-            onChange={handlePasswordChange}
-            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            type="text"
+            placeholder="Full Name"
+            className="w-full p-3 border border-gray-300 rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
           />
-          <button
-            type="button"
-            onClick={togglePassword}
-            className="absolute inset-y-0 right-3 flex items-center text-gray-600 hover:text-gray-800 transition"
-          >
-            {passwordVisible ? <FaEyeSlash /> : <FaEye />}
-          </button>
-        </div>
 
-        {/* Confirm Password Input with Toggle */}
-        <div className="relative mt-4">
+          {/* Email Input */}
           <input
-            type={confirmPasswordVisible ? "text" : "password"}
-            placeholder="Confirm password"
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={validateEmail}
+            className={`w-full p-3 border rounded mb-2 focus:outline-none focus:ring-2 transition ${
+              emailError ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-400"
+            }`}
           />
+          {emailError && <p className="text-red-500 text-sm mb-4">{emailError}</p>}
+
+          {/* Password Input with Toggle */}
+          <div className="relative">
+            <input
+              type={passwordVisible ? "text" : "password"}
+              placeholder="Create a password"
+              value={password}
+              onChange={handlePasswordChange}
+              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            />
+            <button
+              type="button"
+              onClick={togglePassword}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-600 hover:text-gray-800 transition"
+            >
+              {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+
+          {/* Confirm Password Input with Toggle */}
+          <div className="relative mt-4">
+            <input
+              type={confirmPasswordVisible ? "text" : "password"}
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            />
+            <button
+              type="button"
+              onClick={toggleConfirmPassword}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-600 hover:text-gray-800 transition"
+            >
+              {confirmPasswordVisible ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+
+          {passwordError && <p className="text-red-500 text-sm mt-2">{passwordError}</p>}
+
           <button
-            type="button"
-            onClick={toggleConfirmPassword}
-            className="absolute inset-y-0 right-3 flex items-center text-gray-600 hover:text-gray-800 transition"
+            className="w-full bg-blue-600 text-white p-3 rounded mt-6 hover:bg-blue-700 transition"
+            disabled={emailError || passwordError}
           >
-            {confirmPasswordVisible ? <FaEyeSlash /> : <FaEye />}
+            Sign Up
           </button>
-        </div>
-
-        {passwordError && <p className="text-red-500 text-sm mt-2">{passwordError}</p>}
-
-        <button
-          className="w-full bg-blue-600 text-white p-3 rounded mt-6 hover:bg-blue-700 transition"
-          disabled={emailError || passwordError}
-        >
-          Sign Up
-        </button>
+        </form>
 
         <p className="mt-6 text-center text-gray-600">
           Already have an account?{" "}

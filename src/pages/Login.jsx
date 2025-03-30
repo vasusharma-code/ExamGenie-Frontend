@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub, FaEye, FaEyeSlash } from "react-icons/fa";
+import config from "../config"; // Import backend base URL
 
 const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   // Toggle Password Visibility
   const togglePassword = () => {
@@ -23,6 +26,22 @@ const Login = () => {
       setEmailError("Please enter a valid email address.");
     } else {
       setEmailError("");
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const response = await fetch(`${config.backendBaseUrl}/api/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await response.json();
+    if (response.ok) {
+      localStorage.setItem("user_id", data.user_id); // Store user_id in local storage
+      navigate("/home");
+    } else {
+      alert(data.error || "Invalid credentials");
     }
   };
 
@@ -49,37 +68,41 @@ const Login = () => {
           <hr className="flex-grow border-gray-300" />
         </div>
 
-        {/* Email Input */}
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={validateEmail}
-          className={`w-full p-3 border rounded mb-2 focus:outline-none focus:ring-2 transition ${
-            emailError ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-400"
-          }`}
-        />
-        {emailError && <p className="text-red-500 text-sm mb-4">{emailError}</p>}
-
-        {/* Password Input with Toggle */}
-        <div className="relative">
+        <form onSubmit={handleLogin}>
+          {/* Email Input */}
           <input
-            type={passwordVisible ? "text" : "password"}
-            placeholder="Enter your password"
-            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={validateEmail}
+            className={`w-full p-3 border rounded mb-2 focus:outline-none focus:ring-2 transition ${
+              emailError ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-blue-400"
+            }`}
           />
-          <button
-            type="button"
-            onClick={togglePassword}
-            className="absolute inset-y-0 right-3 flex items-center text-gray-600 hover:text-gray-800 transition"
-          >
-            {passwordVisible ? <FaEyeSlash /> : <FaEye />}
-          </button>
-        </div>
+          {emailError && <p className="text-red-500 text-sm mb-4">{emailError}</p>}
 
-        <button className="w-full bg-blue-600 text-white p-3 rounded mt-6 hover:bg-blue-700 transition">
-          Login
-        </button>
+          {/* Password Input with Toggle */}
+          <div className="relative">
+            <input
+              type={passwordVisible ? "text" : "password"}
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+            />
+            <button
+              type="button"
+              onClick={togglePassword}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-600 hover:text-gray-800 transition"
+            >
+              {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+
+          <button className="w-full bg-blue-600 text-white p-3 rounded mt-6 hover:bg-blue-700 transition" type="submit">
+            Login
+          </button>
+        </form>
 
         <p className="mt-6 text-center text-gray-600">
           New user?{" "}
