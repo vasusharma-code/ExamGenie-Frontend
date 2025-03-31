@@ -11,19 +11,16 @@ const Settings = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Save settings (logic placeholder)
     alert("Settings saved!");
   };
 
-  return (
+  return ( 
     <div className="flex h-screen bg-gray-50 text-gray-800 mt-14">
-      {/* Sidebar */}
       <Sidebar
         isOpen={isSidebarOpen}
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
       />
       
-      {/* Main Content Wrapper */}
       <div className={`${isSidebarOpen ? "ml-64" : "ml-0"} flex flex-col flex-1`}>
         <Navbar isOpen={isSidebarOpen} />
         <main className="flex flex-col flex-1 p-6 pt-20 overflow-auto">
